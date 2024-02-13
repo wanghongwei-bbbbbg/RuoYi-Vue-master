@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.store.mapper.TbBrandMapper">
+    
+    <resultMap type="TbBrand" id="TbBrandResult">
+        <result property="brandId"    column="brand_id"    />
+        <result property="brandName"    column="brand_name"    />
+    </resultMap>
+
+    <sql id="selectTbBrandVo">
+        select brand_id, brand_name from tb_brand
+    </sql>
+
+    <select id="selectTbBrandList" parameterType="TbBrand" resultMap="TbBrandResult">
+        <include refid="selectTbBrandVo"/>
+        <where>  
+            <if test="brandName != null  and brandName != ''"> and brand_name like concat('%', #{brandName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTbBrandByBrandId" parameterType="Long" resultMap="TbBrandResult">
+        <include refid="selectTbBrandVo"/>
+        where brand_id = #{brandId}
+    </select>
+        
+    <insert id="insertTbBrand" parameterType="TbBrand" useGeneratedKeys="true" keyProperty="brandId">
+        insert into tb_brand
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="brandName != null and brandName != ''">brand_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="brandName != null and brandName != ''">#{brandName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbBrand" parameterType="TbBrand">
+        update tb_brand
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="brandName != null and brandName != ''">brand_name = #{brandName},</if>
+        </trim>
+        where brand_id = #{brandId}
+    </update>
+
+    <delete id="deleteTbBrandByBrandId" parameterType="Long">
+        delete from tb_brand where brand_id = #{brandId}
+    </delete>
+
+    <delete id="deleteTbBrandByBrandIds" parameterType="String">
+        delete from tb_brand where brand_id in 
+        <foreach item="brandId" collection="array" open="(" separator="," close=")">
+            #{brandId}
+        </foreach>
+    </delete>
+</mapper>
